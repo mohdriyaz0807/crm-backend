@@ -18,8 +18,8 @@ app.use(cors())
 app.use(express.json());
 
 let auth = (req, res, next) => {
-  if(req.headers.authorization!==undefined){
-      jwt.verify(req.headers.authorization, process.env.TOKEN_PASS, (err, decoded) => {
+  if(req.headers.auth!==undefined){
+      jwt.verify(req.headers.auth, process.env.TOKEN_PASS, (err, decoded) => {
           if (err) throw (res.status(404).json({
               message:'session ended',icon:'error'
           }))
@@ -30,10 +30,6 @@ let auth = (req, res, next) => {
   else{
       res.status(404).json({
           message:"token not authorized",icon:'warning'
-      })
-      swal({
-          title:'INVALID TOKEN',
-          icon:'error'
       })
   }
   }
@@ -68,7 +64,7 @@ app.post("/register", async (req, res) => {
                 to: `${req.body.email}`, 
                 subject: "Verification mail",
                 text: "click to Verify your email and activate your account", 
-                html: `<b>Click on the link to verify your email <a href="/String/${verifyString}"><button type='button'>Click here</button></a></b>`,
+                html: `<b>Click on the link to verify your email <a href="/String"><button type='button'>Click here</button></a></b>`,
             });
 
         await db.collection("user").insertOne(req.body);
@@ -96,7 +92,7 @@ app.post("/register", async (req, res) => {
                         verifystring: ''
                     }
                 })
-                res.send({message:'Your account is activated ,click below to Login',url:""})
+                res.send({message:'Your account is activated ,click below to Login',url:"#"})
                 clientInfo.close()
         } else {
             res.send({message:"Link has expired"})
@@ -446,10 +442,10 @@ app.get('/access' , [auth] , async (req,res) => {
     let db = clientInfo.db("crm");
     var data = await db.collection("user").findOne({email : emailData })
       if( ( data.access === 'manager' || data.access === 'admin' ) && ( data.permission === 'view' || data.permission === "edit" ) ) {
-         var users = await db.collection("user").find({access : {$not : /^admin/ } } , {password : 0 } ).toArray()
-         users = users.filter(user => user.email !== data.email )
-         res.json({message : "success" , users : users })
-         await client.close()
+        var users = await db.collection("user").find({access : {$not : /^admin/ } } , {password : 0 } ).toArray()
+        users = users.filter(user => user.email !== data.email )
+        res.json({message : "success" , users : users })
+        await client.close()
       }
       else{
           res.status(404).json({message : 'You do not have permission to view'})
