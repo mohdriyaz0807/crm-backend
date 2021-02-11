@@ -1,21 +1,21 @@
-const cors = require('cors')
 const express = require("express");
+const cors = require('cors')
+const bodyParser = require('body-parser')
 const mongodb = require("mongodb");
 const nodemailer = require("nodemailer")
 const bcrypt=require('bcrypt')
 const jwt = require('jsonwebtoken')
-
 require('dotenv').config() 
+const app = express();
+app.use(cors())
+app.use(bodyParser.json());
 
 const mongoClient = mongodb.MongoClient;
 const objectId = mongodb.ObjectID
 
 
-const app = express();
 const dbURL = process.env.DB_URL ||"mongodb://127.0.0.1:27017";
 const port = process.env.PORT || 4000
-app.use(cors())
-app.use(express.json());
 
 let auth = (req, res, next) => {
   if(req.headers.auth!==undefined){
