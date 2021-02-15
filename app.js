@@ -19,21 +19,22 @@ const dbURL = process.env.DB_URL ||"mongodb://127.0.0.1:27017";
 const port = process.env.PORT || 4000
 
 let auth = (req, res, next) => {
+  try{
   if(req.headers.auth!==undefined){
-      jwt.verify(req.headers.auth, process.env.TOKEN_PASS, (err, decoded) => {
-          if (err) throw (res.status(404).json({
-              message:'session ended',icon:'warning'
-          }))
-          console.log(decoded)
-      })
+      let jwttoken = jwt.verify(req.headers.auth, process.env.TOKEN_PASS)
+      res.locals.userid = jwttoken.userid
+      console.log(res.locals.userid);
       next()
       }
   else{
-      res.status(404).json({
-          message:"token not authorized",icon:'warning'
-      })
+      res.status(404).json({message:"token not authorized"})
   }
+}
+  catch(err){
+    console.log(err)
+    res.status(404).json({message:"authorization failed"})
   }
+}
 
 app.post("/register", async (req, res) => {
     try {
@@ -206,11 +207,10 @@ app.post("/register", async (req, res) => {
 })
 
 app.post('/contact' , [auth], async (req,res) => {
-  const emailData=localStorage.getItem('userdata').email
   try {
     let clientInfo = await mongoClient.connect(dbURL);
     let db = clientInfo.db("crm");
-    var data = await db.collection("user").findOne({email : emailData })
+    var data = await db.collection("user").findOne({_id : mongodb.ObjectID(res.locals.userid) })
       if(data !== null ){
           if(data.permission !== 'edit'){
               res.json({ message: "You do not have permission to add or edit" });
@@ -225,11 +225,10 @@ app.post('/contact' , [auth], async (req,res) => {
 })
 
 app.get('/contact' ,[auth], async (req,res) => {
-  const emailData=localStorage.getItem('userdata').email
   try {
     let clientInfo = await mongoClient.connect(dbURL);
     let db = clientInfo.db("crm");
-    var data = await db.collection("user").findOne({email : emailData })
+    var data = await db.collection("user").findOne({_id : mongodb.ObjectID(res.locals.userid) })
       if(data !== null ){
           if(data.permission === 'none'){
               res.json({ message: "You do not have permission to view" });
@@ -245,11 +244,10 @@ app.get('/contact' ,[auth], async (req,res) => {
 })
 
 app.put('/leads' , [auth] , async (req, res) => {
-  const emailData=localStorage.getItem('userdata').email
   try {
     let clientInfo = await mongoClient.connect(dbURL);
     let db = clientInfo.db("crm");
-    var data = await db.collection("user").findOne({email : emailData })
+    var data = await db.collection("user").findOne({_id : mongodb.ObjectID(res.locals.userid) })
       if(data !== null ){
           if(data.permission !== "edit"){
               res.json({ message: "You do not have permission to add or edit" });
@@ -277,11 +275,10 @@ app.put('/leads' , [auth] , async (req, res) => {
 })
 
 app.post('/leads' ,[auth], async (req,res) => {
-  const emailData=localStorage.getItem('userdata').email
   try {
     let clientInfo = await mongoClient.connect(dbURL);
     let db = clientInfo.db("crm");
-    var data = await db.collection("user").findOne({email : emailData })
+    var data = await db.collection("user").findOne({_id : mongodb.ObjectID(res.locals.userid) })
       if(data !== null ){
           if(data.permission !== "edit"){
               res.json({ message: "You do not have permission to add or edit" });
@@ -309,11 +306,10 @@ app.post('/leads' ,[auth], async (req,res) => {
 })
 
 app.get('/leads' ,[auth], async (req,res) => {
-  const emailData=localStorage.getItem('userdata').email
   try {
-    let clientInfo = await mongoClient.connect(dbURL);
+      let clientInfo = await mongoClient.connect(dbURL);
     let db = clientInfo.db("crm");
-    var data = await db.collection("user").findOne({email : emailData })
+    var data = await db.collection("user").findOne({_id : mongodb.ObjectID(res.locals.userid) })
       if(data !== null ){
           if(data.permission === 'none'){
               res.json({ message: "You do not have permission to view" });
@@ -332,11 +328,10 @@ app.get('/leads' ,[auth], async (req,res) => {
 })
 
 app.put('/service' , [auth] , async (req, res) => {
-  const emailData=localStorage.getItem('userdata').email
   try {
     let clientInfo = await mongoClient.connect(dbURL);
     let db = clientInfo.db("crm");
-    var data = await db.collection("user").findOne({email : emailData })
+    var data = await db.collection("user").findOne({_id : mongodb.ObjectID(res.locals.userid) })
       if(data !== null ){
           if(data.permission !== "edit"){
               res.json({ message: "You do not have permission to add or edit" });
@@ -363,11 +358,10 @@ app.put('/service' , [auth] , async (req, res) => {
 })
 
 app.get('/service' ,[auth], async (req,res) => {
-  const emailData=localStorage.getItem('userdata').email
   try {
     let clientInfo = await mongoClient.connect(dbURL);
     let db = clientInfo.db("crm");
-    var data = await db.collection("user").findOne({email : emailData })
+    var data = await db.collection("user").findOne({_id : mongodb.ObjectID(res.locals.userid) })
       if(data !== null ){
           if(data.permission === 'none'){
               res.json({ message: "You do not have permission to view" });
@@ -386,11 +380,10 @@ app.get('/service' ,[auth], async (req,res) => {
 })
 
 app.post('/service' ,[auth], async (req,res) => {
-  const emailData=localStorage.getItem('userdata').email
   try {
     let clientInfo = await mongoClient.connect(dbURL);
     let db = clientInfo.db("crm");
-    var data = await db.collection("user").findOne({email : emailData })
+    var data = await db.collection("user").findOne({_id : mongodb.ObjectID(res.locals.userid) })
       if(data !== null ){
           if(data.permission !== "edit"){
               res.json({ message: "You do not have permission to add or edit" });
@@ -419,11 +412,10 @@ app.post('/service' ,[auth], async (req,res) => {
 })
 
 app.post('/access' , [auth] , async (req,res) => { 
-  const emailData=localStorage.getItem('userdata').email
   try {
     let clientInfo = await mongoClient.connect(dbURL, {useNewUrlParser: true , useUnifiedTopology: true } );
     let db = clientInfo.db("crm");
-      var data = await db.collection("user").findOne({email : emailData })
+      var data = await db.collection("user").findOne({_id : mongodb.ObjectID(res.locals.userid) })
       if(data.access === 'manager' || data.access === 'admin' && data.permission === "edit"  ) {
         var users = await db.collection("user").updateOne({_id : objectId(req.body._id) } , {$set : {permission : req.body.permission} })
         res.json({message : "success" , users : users })
@@ -437,11 +429,10 @@ app.post('/access' , [auth] , async (req,res) => {
 })
 
 app.get('/access' , [auth] , async (req,res) => { 
-  const emailData=localStorage.getItem('userdata').email
   try {
     let clientInfo = await mongoClient.connect(dbURL);
     let db = clientInfo.db("crm");
-    var data = await db.collection("user").findOne({email : emailData })
+    var data = await db.collection("user").findOne({_id : mongodb.ObjectID(res.locals.userid) })
       if( ( data.access === 'manager' || data.access === 'admin' ) && ( data.permission === 'view' || data.permission === "edit" ) ) {
         var users = await db.collection("user").find({access : {$not : /^admin/ } } , {password : 0 } ).toArray()
         users = users.filter(user => user.email !== data.email )
