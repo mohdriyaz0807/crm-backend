@@ -9,6 +9,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+
 const nodemailer = require("nodemailer")
 const mongoClient = mongodb.MongoClient;
 const objectId = mongodb.ObjectID
@@ -21,7 +22,7 @@ let auth = (req, res, next) => {
   if(req.headers.auth!==undefined){
       jwt.verify(req.headers.auth, process.env.TOKEN_PASS, (err, decoded) => {
           if (err) throw (res.status(404).json({
-              message:'session ended',icon:'error'
+              message:'session ended',icon:'warning'
           }))
           console.log(decoded)
       })
