@@ -251,22 +251,22 @@ app.put('/leads' , [auth] , async (req, res) => {
       if(data !== null ){
           if(data.permission !== "edit"){
               res.json({ message: "You do not have permission to add or edit" });
-              await client.close()
+              await clientInfo.close()
           }else if(data.permission === "edit" ) {
               var contactmatch = await db.collection("contacts").findOne({email : req.body.email })
               if(contactmatch === null ){
                   res.status(404).json({ message: "Contact not found in database. Create a contact for the lead" });
-                  await client.close()
+                  await clientInfo.close()
               }
               var leads = await db.collection("leads").updateOne( {_id : mongodb.ObjectID(req.body._id)} ,
               {$set : {status : req.body.status , description : req.body.description , email : req.body.email , lastEditedAt : new Date() } } )
               res.json({message : "success" , leads : leads })
-              await client.close()
+              await clientInfo.close()
                 }
       }
       else{
           res.status(404).json({ message: "failed" });
-          await client.close()
+          await clientInfo.close()
       }
   } catch (err) {
       console.log(err);
@@ -282,23 +282,23 @@ app.post('/leads' ,[auth], async (req,res) => {
       if(data !== null ){
           if(data.permission !== "edit"){
               res.json({ message: "You do not have permission to add or edit" });
-              await client.close()
+              await clientInfo.close()
           }else if(data.permission === "edit" ) {
               var contactmatch = await db.collection("contacts").findOne({email : req.body.email })
               if(contactmatch === null ){
                   res.status(404).json({ message: "Contact not found in database. Create a contact for the lead" });
-                  await client.close()
+                  await clientInfo.close()
               }
               req.body.createdBy = {name : data.name , email : data.email , access : data.access }
               req.body.createdAt = new Date()
               var leads = await db.collection("leads").insertOne({ ...req.body })
               res.json({message : "success" , leads : leads })
-              await client.close()
+              await clientInfo.close()
           }
       }
       else{
           res.status(404).json({ message: "failed" });
-          await client.close()
+          await clientInfo.close()
               }
   } catch (err) {
       console.log(err);
@@ -335,21 +335,21 @@ app.put('/service' , [auth] , async (req, res) => {
       if(data !== null ){
           if(data.permission !== "edit"){
               res.json({ message: "You do not have permission to add or edit" });
-              await client.close()
+              await clientInfo.close()
           }else if(data.permission === "edit" ) {
               var contactmatch = await db.collection("contacts").findOne({email : req.body.email })
               if(contactmatch === null ){
                   res.status(404).json({ message: "Contact not found in database. Create a contact for the lead" });
-                  await client.close()
+                  await clientInfo.close()
               }
               var service = await db.collection("service_request").updateOne( {_id : mongodb.ObjectID(req.body._id)} , {$set : {status : req.body.status , description : req.body.description , email : req.body.email , lastEditedAt : new Date() } } )
               res.json({message : "success" , service : service })
-              await client.close()
+              await clientInfo.close()
           }
       }
       else{
           res.status(404).json({ message: "failed" });
-          await client.close()
+          await clientInfo.close()
       }
   } catch (err) {
       console.log(err);
@@ -366,7 +366,7 @@ app.get('/service' ,[auth], async (req,res) => {
           if(data.permission === 'none'){
               res.json({ message: "You do not have permission to view" });
           }else{
-              const db = client.db("crm");
+              const db = clientInfo.db("crm");
               var service = await db.collection("service_request").find().toArray()
               res.json({message : "success" , service : service })
           }
@@ -387,24 +387,24 @@ app.post('/service' ,[auth], async (req,res) => {
       if(data !== null ){
           if(data.permission !== "edit"){
               res.json({ message: "You do not have permission to add or edit" });
-              await client.close()
+              await clientInfo.close()
           }else if(data.permission === "edit" ) {
               var contactmatch = await db.collection("contacts").findOne({email : req.body.email })
               
               if(contactmatchl ){
                   res.status(404).json({ message: "Contact not found in database. Create a contact for the service request" });
-                  await client.close()
+                  await clientInfo.close()
               }
               req.body.createdBy = {nae : data.name , email : data.email , access : data.access }
               req.body.createdAt = new Date()
               var service = await db.collection("service_request").insertOne({ ...req.body })
               res.json({message : "success" , service : service })
-              await client.close()
+              await clientInfo.close()
           }
       }
       else{
           res.status(404).json({ message: "failed" });
-          await client.close()
+          await clientInfo.close()
       }
   } catch (err) {
       console.log(err);
@@ -437,11 +437,11 @@ app.get('/access' , [auth] , async (req,res) => {
         var users = await db.collection("user").find({access : {$not : /^admin/ } } , {password : 0 } ).toArray()
         users = users.filter(user => user.email !== data.email )
         res.json({message : "success" , users : users })
-        await client.close()
+        await clientInfo.close()
       }
       else{
           res.status(404).json({message : 'You do not have permission to view'})
-          await client.close()
+          await clientInfo.close()
       }
   } catch (err) {
     console.log(err)      
