@@ -113,7 +113,7 @@ app.post("/register", async (req, res) => {
       }
     }catch(err){
       console.log(err);
-      res.status(400).json({message:err})
+      res.status(400).json({messages:err})
     }
   } )
   app.post("/login", async (req, res) => {
