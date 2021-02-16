@@ -224,6 +224,25 @@ app.post('/contact' , [auth], async (req,res) => {
   }
 })
 
+app.put('/contact/:id' , [auth], async (req,res) => {
+  try {
+    let clientInfo = await mongoClient.connect(dbURL);
+    let db = clientInfo.db("crm");
+    var data = await db.collection("user").findOne({_id : mongodb.ObjectID(res.locals.userid) })
+      if(data !== null ){
+          if(data.permission !== 'edit'){
+              res.json({ message: "You do not have permission to add or edit" });
+              await clientInfo.close()
+          }else if(data.permission === "edit" ) {
+              var contacts = await db.collection("contacts").findOneAndDelete({_id:mongodb.ObjectID(req.params.id)})
+              res.json({message : "success" , contacts : contacts })
+          }
+      }
+  } catch (err) {
+      console.log(err);
+  }
+})
+
 app.get('/contact' ,[auth], async (req,res) => {
   try {
     let clientInfo = await mongoClient.connect(dbURL);
@@ -390,12 +409,11 @@ app.post('/service' ,[auth], async (req,res) => {
               await clientInfo.close()
           }else if(data.permission === "edit" ) {
               var contactmatch = await db.collection("contacts").findOne({email : req.body.email })
-              
-              if(contactmatchl ){
+              if(contactmatch===null){
                   res.status(404).json({ message: "Contact not found in database. Create a contact for the service request" });
                   await clientInfo.close()
               }
-              req.body.createdBy = {nae : data.name , email : data.email , access : data.access }
+              req.body.createdBy = {name : data.name , email : data.email , access : data.access }
               req.body.createdAt = new Date()
               var service = await db.collection("service_request").insertOne({ ...req.body })
               res.json({message : "success" , service : service })
