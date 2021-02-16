@@ -104,7 +104,18 @@ app.post("/register", async (req, res) => {
         console.log(error)
     }
 })
-  
+  app.get('/login' ,[auth] , (req,res)=>{
+    try{
+      if(res.locals.userid){
+        res.json({message : true})
+      }else{
+        res.json({message : false})
+      }
+    }catch(err){
+      console.log(err);
+      res.status(400).json({message:err})
+    }
+  } )
   app.post("/login", async (req, res) => {
     try {
       let clientInfo = await mongoClient.connect(dbURL);
