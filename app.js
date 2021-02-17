@@ -94,7 +94,8 @@ app.post("/register", async (req, res) => {
                         verifystring: ''
                     }
                 })
-                res.send({message:'Your account is activated ,click below to Login',url:"#"})
+                res.send({message:'Your account is activated ,Go to Login'})
+                res.redirect('/Login')
                 clientInfo.close()
         } else {
             res.send({message:"Link has expired"})
