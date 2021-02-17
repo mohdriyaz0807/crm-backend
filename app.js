@@ -66,7 +66,7 @@ app.post("/register", async (req, res) => {
                 to: `${req.body.email}`, 
                 subject: "Verification mail",
                 text: "click to Verify your email and activate your account", 
-                html: `<b>Click on the link to verify your email <a href="/String"><button type='button'>Click here</button></a></b>`,
+                html: `<b>Click on the link to verify your email <a href="https://easy-crm.netlify.app/String">https://easy-crm.netlify.app/String</a></b>`,
             });
 
         await db.collection("user").insertOne(req.body);
@@ -163,7 +163,7 @@ app.post("/register", async (req, res) => {
           to: `${req.body.email}`, 
           subject: "Password Reset", 
           text: "Reset your password", 
-          html: `<b>Click below to reset your password</b><br> <a href='/ResetPassword/${random}'>Reset</a>`
+          html: `<b>Click below to reset your password</b><br> <a href='https://easy-crm.netlify.app/ResetPassword/${random}'>https://easy-crm.netlify.app/ResetPassword/${random}</a>`
         })
         await db.collection("user").updateOne({ email: req.body.email },{$set:{'randomstring':random}});
         res.status(200).json({message: `Thanks! Please check ${req.body.email} for a link to reset your password.`,icon:'success'});
