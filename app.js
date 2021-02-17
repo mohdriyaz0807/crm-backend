@@ -66,7 +66,7 @@ app.post("/register", async (req, res) => {
                 to: `${req.body.email}`, 
                 subject: "Verification mail",
                 text: "click to Verify your email and activate your account", 
-                html: `<b>Click on the link to verify your email <a href="https://easy-crm.netlify.app/String">https://easy-crm.netlify.app/String</a></b>`,
+                html: `<b>Click on the link to verify your email <a href="https://easy-crm.netlify.app/String/${verifyString}">https://easy-crm.netlify.app/String/${verifyString}</a></b>`,
             });
 
         await db.collection("user").insertOne(req.body);
