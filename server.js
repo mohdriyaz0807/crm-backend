@@ -23,7 +23,6 @@ let auth = (req, res, next) => {
   if(req.headers.auth!==undefined){
       let jwttoken = jwt.verify(req.headers.auth, process.env.TOKEN_PASS)
       res.locals.userid = jwttoken.userid
-      console.log(res.locals.userid);
       next()
       }
   else{
@@ -31,7 +30,7 @@ let auth = (req, res, next) => {
   }
 }
   catch(err){
-    console.log(err)
+    console.error(err)
     res.status(404).json({message:"authorization failed"})
   }
 }
@@ -76,7 +75,7 @@ app.post("/register", async (req, res) => {
         clientInfo.close();
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   })
 
@@ -102,7 +101,7 @@ app.post("/register", async (req, res) => {
             clientInfo.close()
         }
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 })
   app.get('/login' ,[auth] , (req,res)=>{
@@ -113,7 +112,7 @@ app.post("/register", async (req, res) => {
         res.json({message : false})
       }
     }catch(err){
-      console.log(err);
+      console.error(err);
       res.status(400).json({messages:err})
     }
   } )
@@ -137,7 +136,7 @@ app.post("/register", async (req, res) => {
         res.status(400).json({ message: "User not registered" ,icon :'warning' });
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   })
 
@@ -175,7 +174,7 @@ app.post("/register", async (req, res) => {
       }
     }
     catch(err){
-      console.log(err);
+      console.error(err);
     }
   })
 
@@ -199,7 +198,7 @@ app.post("/register", async (req, res) => {
       }
   }
   catch(err){
-    console.log(err);
+    console.error(err);
   }
   })
 
@@ -210,11 +209,10 @@ app.post("/register", async (req, res) => {
           var [service, leads, contacts] = await  Promise.all([db.collection("service_request").find().toArray() ,
                                                               db.collection("leads").find().toArray() , 
                                                               await db.collection("contacts").find().toArray() ])
-        console.log(service.length ,leads.length , contacts.length)
         res.json({message : 'success' , service , leads , contacts })
     }
     catch (err) {
-      console.log(err);
+      console.error(err);
     }
 })
 
@@ -232,7 +230,7 @@ app.post('/contact' , [auth], async (req,res) => {
           }
       }
   } catch (err) {
-      console.log(err);
+      console.error(err);
   }
 })
 
@@ -251,7 +249,7 @@ app.put('/contact/:id' , [auth], async (req,res) => {
           }
       }
   } catch (err) {
-      console.log(err);
+      console.error(err);
   }
 })
 
@@ -270,7 +268,7 @@ app.get('/contact' ,[auth], async (req,res) => {
           }
       }
   } catch (err) {
-      console.log(err);
+      console.error(err);
   }
 })
 
@@ -300,7 +298,7 @@ app.put('/leads' , [auth] , async (req, res) => {
           await clientInfo.close()
       }
   } catch (err) {
-      console.log(err);
+      console.error(err);
   }
 
 })
@@ -332,7 +330,7 @@ app.post('/leads' ,[auth], async (req,res) => {
           await clientInfo.close()
               }
   } catch (err) {
-      console.log(err);
+      console.error(err);
   }
 })
 
@@ -354,7 +352,7 @@ app.get('/leads' ,[auth], async (req,res) => {
           res.status(404).json({ message: "failed" });
       }
   } catch (err) {
-      console.log(err);
+      console.error(err);
   }
 })
 
@@ -383,7 +381,7 @@ app.put('/service' , [auth] , async (req, res) => {
           await clientInfo.close()
       }
   } catch (err) {
-      console.log(err);
+      console.error(err);
   }
 
 })
@@ -406,7 +404,7 @@ app.get('/service' ,[auth], async (req,res) => {
           res.status(404).json({ message: "failed" });
       }
   } catch (err) {
-      console.log(err);
+      console.error(err);
   }
 })
 
@@ -437,7 +435,7 @@ app.post('/service' ,[auth], async (req,res) => {
           await clientInfo.close()
       }
   } catch (err) {
-      console.log(err);
+      console.error(err);
   }
 })
 
@@ -454,7 +452,7 @@ app.post('/access' , [auth] , async (req,res) => {
           res.status(404).json({message : 'You do not have permission to edit'})
       }
   } catch (err) {
-      console.log(err)
+      console.error(err)
   }
 })
 
@@ -474,7 +472,7 @@ app.get('/access' , [auth] , async (req,res) => {
           await clientInfo.close()
       }
   } catch (err) {
-    console.log(err)      
+    console.error(err)      
   }
 })
 
