@@ -446,7 +446,7 @@ app.post('/access' , [auth] , async (req,res) => {
     let clientInfo = await mongoClient.connect(dbURL, {useNewUrlParser: true , useUnifiedTopology: true } );
     let db = clientInfo.db("crm");
       var data = await db.collection("user").findOne({_id : mongodb.ObjectID(res.locals.userid) })
-      if(data.access === 'manager' || data.access === 'admin' && data.permission === "edit"  ) {
+      if(data.access === 'admin' && data.permission === "edit"  ) {
         var users = await db.collection("user").updateOne({_id : objectId(req.body._id) } , {$set : {permission : req.body.permission} })
         res.json({message : "success" , users : users })
       }
@@ -463,7 +463,7 @@ app.get('/access' , [auth] , async (req,res) => {
     let clientInfo = await mongoClient.connect(dbURL);
     let db = clientInfo.db("crm");
     var data = await db.collection("user").findOne({_id : mongodb.ObjectID(res.locals.userid) })
-      if( ( data.access === 'manager' || data.access === 'admin' ) && ( data.permission === 'view' || data.permission === "edit" ) ) {
+      if( data.access === 'admin' && ( data.permission === 'view' || data.permission === "edit" ) ) {
         var users = await db.collection("user").find({access : {$not : /^admin/ } } , {password : 0 } ).toArray()
         users = users.filter(user => user.email !== data.email )
         res.json({message : "success" , users : users })
